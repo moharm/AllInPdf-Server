@@ -1,5 +1,5 @@
 # AllInPdf-Server side
-web app that helps you to convert all types of images and pdf files to one pdf file.
+web app based on Spring Boot, that helps you to convert all types of images and pdf files to one pdf file.
 
 using :
 - itext lib
