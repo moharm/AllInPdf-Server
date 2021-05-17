@@ -98,7 +98,7 @@ public class MainService {
 
     }
 
-    protected byte[] getDocumentFromTempFile(String path) throws IOException{
+    protected static byte[] getDocumentFromTempFile(String path) throws IOException{
         if (path != null) {
             return FileLocalUtils.getImagefromTempFile(path);
         } else {
