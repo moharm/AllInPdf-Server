@@ -86,20 +86,22 @@ public class MainService {
 
     public String concatPdfs() throws Exception {
         List<byte[]> FileList = new ArrayList<>();
-
-        for (Map.Entry<String, Map<String, String>> entry : filesData.entrySet()) {
-            String name = entry.getKey();
+        Map<String, Map<String, String>> data = filesData;
+        for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
+            //String name = entry.getKey();
             Map<String, String> file = entry.getValue();
             if (IMAGE_EXTENSIONS.contains(file.get("ext"))) {
-                FileList.add(FileLocalUtils.imageToPdf(getDocumentFromTempFile(file.get("file"))).toByteArray());
+                byte[] image = getDocumentFromTempFile(file.get("file"));
+                FileList.add(FileLocalUtils.imageToPdf(image).toByteArray());
             } else if (PDF_EXTENSIONS.contains(file.get("ext"))) {
                 File f = new File(file.get("file"));
                 byte[] test = FileUtils.readFileToByteArray(f);
                 FileList.add(test);
             }
-            filesData.remove(name);
-            indexFile = 0;
+
         }
+        filesData =new HashMap<>();
+        indexFile = 0;
 
         return FileLocalUtils.pdfsTopdf(FileList);
 
@@ -145,4 +147,8 @@ public class MainService {
         }
     }
 
+    public String initFiles() {
+        indexFile = 0;
+        return "success";
+    }
 }

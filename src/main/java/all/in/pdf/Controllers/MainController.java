@@ -48,6 +48,11 @@ public class MainController {
 //        return mainService.getFilesFromSession(userPrincipal);
 //    }
 
+    @GetMapping(value = "init")
+    public String initFiles(){
+        return mainService.initFiles();
+    }
+
     @GetMapping(value = "concat")
     public ResponseEntity<InputStreamResource> downloadFile() throws Exception {
         String path = mainService.concatPdfs();
