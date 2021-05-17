@@ -25,7 +25,6 @@ public class MainService {
     public static List<String> PDF_EXTENSIONS = Arrays.asList("pdf", "PDF");
     public static int indexFile = 0;
     public static Map<String, Map<String, String>> filesData = new HashMap<>();
-    HttpSession session;
 
     @Autowired
     FileLocalUtils fileLocalUtils;
@@ -40,7 +39,6 @@ public class MainService {
         fileData.put("file",pathFile);
         fileData.put("ext", extension);
         filesData.put(key,fileData);
-//        session.setAttribute(key,fileData);
         increaseFileIndexSession();
 
         return key;
@@ -60,16 +58,9 @@ public class MainService {
 //        return files;
 //    }
 
-    private void initSession(HttpSession session){
-        if(session.getAttribute(FILE_INDEX) == null){
-            session.setAttribute(FILE_INDEX, 0);
-        }
-    }
 
-    private void increaseFileIndexSession(){
-//        int index = indexFile;
+    private static void increaseFileIndexSession(){
         indexFile += 1;
-//        indexFile(newValut);
     }
 
 
@@ -84,7 +75,7 @@ public class MainService {
         }
     }
 
-    public String concatPdfs() throws Exception {
+    public static String concatPdfs() throws Exception {
         List<byte[]> FileList = new ArrayList<>();
         Map<String, Map<String, String>> data = filesData;
         for (Map.Entry<String, Map<String, String>> entry : data.entrySet()) {
@@ -126,15 +117,10 @@ public class MainService {
 
     }
 
-    public String deleteAllAttribute(HttpSession s){
-        session = s;
-        try {
-            Enumeration<String> names = session.getAttributeNames();
-            while (names.hasMoreElements()) {
-                String name = names.nextElement();
-                session.removeAttribute(name);
+    public static String deleteAllAttribute(HttpSession s){
 
-            }
+        try {
+            filesData = new HashMap<>();
             return "ok";
         }catch (Exception e){
             return e.getMessage();
@@ -147,7 +133,7 @@ public class MainService {
         }
     }
 
-    public String initFiles() {
+    public static String initFiles() {
         indexFile = 0;
         return "success";
     }
