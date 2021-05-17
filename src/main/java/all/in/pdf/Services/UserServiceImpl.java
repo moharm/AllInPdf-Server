@@ -1,9 +1,9 @@
 package all.in.pdf.Services;
 
-import com.spring.login.exception.ResourceNotFoundException;
-import com.spring.login.model.User;
-import com.spring.login.repository.UserRepository;
-import com.spring.login.security.UserPrincipal;
+import all.in.pdf.Exception.ResourceNotFoundException;
+import all.in.pdf.Model.User;
+import all.in.pdf.Repository.UserRepository;
+import all.in.pdf.Security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.userdetails.UserDetails;

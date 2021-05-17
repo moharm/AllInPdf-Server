@@ -1,5 +1,6 @@
 package all.in.pdf.Services;
 
+import all.in.pdf.Security.UserPrincipal;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 import javax.servlet.ServletContext;
@@ -22,41 +23,42 @@ public class MainService {
     public static String FILE_INDEX = "FILE_INDEX";
     public static List<String> IMAGE_EXTENSIONS = Arrays.asList("jpg","png","jpeg","JPG","JPEG","PNG");
     public static List<String> PDF_EXTENSIONS = Arrays.asList("pdf", "PDF");
-
+    public static int indexFile = 0;
+    public static Map<String, Map<String, String>> filesData = new HashMap<>();
     HttpSession session;
 
     @Autowired
     FileLocalUtils fileLocalUtils;
 
-    public String addToSession(MultipartFile file, HttpSession s) throws IOException,NotAcceptableStatusException {
-        session = s;
-        initSession(session);
-        String key = "file_" + session.getAttribute(FILE_INDEX);
+    public String addToSession(MultipartFile file) throws IOException,NotAcceptableStatusException {
+
+        String key = "file_" + indexFile;
         String pathFile = fileLocalUtils.saveToDisk(file);
         String extension = fileLocalUtils.getExtension(file.getOriginalFilename());
         validerExtension(extension);
         Map<String, String> fileData = new HashMap<>();
         fileData.put("file",pathFile);
         fileData.put("ext", extension);
-        session.setAttribute(key,fileData);
+        filesData.put(key,fileData);
+//        session.setAttribute(key,fileData);
         increaseFileIndexSession();
 
         return key;
     }
 
-    public Map<String, String> getFilesFromSession(@NotNull HttpSession session){
-        Map<String, String> files = new HashMap<>();
-        Enumeration<String> en = session.getAttributeNames();
-        while (en.hasMoreElements()){
-            String name = en.nextElement();
-            if (name.startsWith("file")) {
-                Map<String, String> file = (Map<String, String>) session.getAttribute(name);
-                files.put(name, file.get("file"));
-            }
-        }
-
-        return files;
-    }
+//    public Map<String, String> getFilesFromSession(UserPrincipal userPrincipal){
+//        Map<String, String> files = new HashMap<>();
+//        Enumeration<String> en = session.getAttributeNames();
+//        while (en.hasMoreElements()){
+//            String name = en.nextElement();
+//            if (name.startsWith("file")) {
+//                Map<String, String> file = (Map<String, String>) userPrincipal.fileData;
+//                files.put(name, file.get("file"));
+//            }
+//        }
+//
+//        return files;
+//    }
 
     private void initSession(HttpSession session){
         if(session.getAttribute(FILE_INDEX) == null){
@@ -65,9 +67,9 @@ public class MainService {
     }
 
     private void increaseFileIndexSession(){
-        int index = (int) session.getAttribute(FILE_INDEX);
-        int newValut = index + 1;
-        session.setAttribute(FILE_INDEX, newValut);
+//        int index = indexFile;
+        indexFile += 1;
+//        indexFile(newValut);
     }
 
 
@@ -82,29 +84,23 @@ public class MainService {
         }
     }
 
-    public String concatPdfs(HttpSession s) throws Exception {
-        session = s;
-        Enumeration<String> names = session.getAttributeNames();
+    public String concatPdfs() throws Exception {
         List<byte[]> FileList = new ArrayList<>();
 
-        while (names.hasMoreElements()) {
-            String name = names.nextElement();
-            if (name.startsWith("file")) {
-                Map<String, String> file = (Map<String, String>) session.getAttribute(name);
-                if (IMAGE_EXTENSIONS.contains(file.get("ext"))) {
-                    FileList.add(FileLocalUtils.imageToPdf(getDocumentFromTempFile(file.get("file"))).toByteArray());
-                }else if (PDF_EXTENSIONS.contains(file.get("ext")))  {
-                    File f = new File(file.get("file"));
-                    boolean exist = f.exists();
-                    byte[] test = FileUtils.readFileToByteArray(f);
-                    FileList.add(test);
-                }
+        for (Map.Entry<String, Map<String, String>> entry : filesData.entrySet()) {
+            String name = entry.getKey();
+            Map<String, String> file = entry.getValue();
+            if (IMAGE_EXTENSIONS.contains(file.get("ext"))) {
+                FileList.add(FileLocalUtils.imageToPdf(getDocumentFromTempFile(file.get("file"))).toByteArray());
+            } else if (PDF_EXTENSIONS.contains(file.get("ext"))) {
+                File f = new File(file.get("file"));
+                byte[] test = FileUtils.readFileToByteArray(f);
+                FileList.add(test);
             }
-            session.removeAttribute(name);
-            session.removeAttribute(FILE_INDEX);
-
-
+            filesData.remove(name);
+            indexFile = 0;
         }
+
         return FileLocalUtils.pdfsTopdf(FileList);
 
     }
@@ -117,10 +113,9 @@ public class MainService {
         }
     }
 
-    public String deleteFile(String code, HttpSession s){
+    public String deleteFile(String code){
         try {
-            session = s;
-            session.removeAttribute(code);
+            filesData.remove(code);
             return "ok";
 
         }catch (Exception e){

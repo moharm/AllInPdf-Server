@@ -1,11 +1,11 @@
 package all.in.pdf.Config;
 
-import com.spring.login.security.RestAuthenticationEntryPoint;
-import com.spring.login.security.TokenAuthenticationFilter;
-import com.spring.login.security.oauth2.CustomOAuth2UserService;
-import com.spring.login.security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
-import com.spring.login.security.oauth2.OAuth2AuthenticationFailureHandler;
-import com.spring.login.security.oauth2.OAuth2AuthenticationSuccessHandler;
+import all.in.pdf.Security.RestAuthenticationEntryPoint;
+import all.in.pdf.Security.TokenAuthenticationFilter;
+import all.in.pdf.Security.oauth2.CustomOAuth2UserService;
+import all.in.pdf.Security.oauth2.HttpCookieOAuth2AuthorizationRequestRepository;
+import all.in.pdf.Security.oauth2.OAuth2AuthenticationFailureHandler;
+import all.in.pdf.Security.oauth2.OAuth2AuthenticationSuccessHandler;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
